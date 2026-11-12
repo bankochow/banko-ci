@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { deliveryFeeForKm, matchDeliveryZone, startingDeliveryFee } from '../src/data/delivery.ts'
+import { addressWithPlace, deliveryFeeForKm, matchDeliveryZone, startingDeliveryFee, suggestDeliveryPlaces } from '../src/data/delivery.ts'
 import { quoteOrder } from '../src/lib/quote.ts'
 
 describe('delivery fees', () => {
@@ -20,6 +20,18 @@ describe('delivery fees', () => {
     assert.equal(matchDeliveryZone('10 Admiralty Way, Lekki Phase 1')?.id, 'island')
     assert.equal(matchDeliveryZone('near Shomolu, drop at Lekki')?.id, 'island')
     assert.equal(matchDeliveryZone('House 4'), undefined)
+  })
+
+  test('typing an area offers the places that set the fee', () => {
+    const akoka = suggestDeliveryPlaces('7 Church Street, ako')
+    assert.equal(akoka[0]?.label, 'Akoka')
+    assert.equal(akoka[0]?.zone.id, 'shomolu')
+    assert.equal(addressWithPlace('7 Church Street, ako', 'akoka'), '7 Church Street, Akoka')
+    assert.equal(matchDeliveryZone(addressWithPlace('7 Church Street, ako', 'akoka'))?.fee, 1900)
+
+    const lekki = suggestDeliveryPlaces('Admiralty, lek')
+    assert.ok(lekki.some((hit) => hit.label === 'Lekki' && hit.zone.id === 'island'))
+    assert.equal(suggestDeliveryPlaces('7 Church Street, Akoka').length, 0)
   })
 })
 
