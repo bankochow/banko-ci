@@ -1,0 +1,9 @@
+{
+  "name": "banko-ci",
+  "private": true,
+  "description": "Public CI for Banko Chow order tests. Actions are free here. Signed releases stay on the private app repo.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/checkout.test.ts tests/paid-bag.test.ts tests/delivery.test.ts"
+  }
+}
