@@ -222,3 +222,52 @@ export function matchDeliveryZone(address: string): DeliveryZone | undefined {
   }
   return best?.zone
 }
+
+function titlePlace(place: string): string {
+  return place.replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
+}
+
+export interface AddressSuggestion {
+  place: string
+  label: string
+  zone: DeliveryZone
+}
+
+/** Area names that complete what the customer is typing. Picking one sets the delivery fee. */
+export function suggestDeliveryPlaces(address: string): AddressSuggestion[] {
+  const words = address.trimEnd().split(/\s+/).filter(Boolean)
+  for (let count = Math.min(3, words.length); count >= 1; count -= 1) {
+    const fragment = normalizeAddress(words.slice(-count).join(' '))
+    if (fragment.length < 2) continue
+    const hits: AddressSuggestion[] = []
+    const seen = new Set<string>()
+    for (const zone of deliveryZones) {
+      for (const place of zone.places) {
+        const normal = normalizeAddress(place)
+        if (normal.length < 3 || normal === fragment || seen.has(normal)) continue
+        if (!normal.startsWith(fragment)) continue
+        seen.add(normal)
+        hits.push({ place, label: titlePlace(place), zone })
+      }
+    }
+    if (hits.length > 0) {
+      return hits.sort((a, b) => a.label.length - b.label.length || a.label.localeCompare(b.label)).slice(0, 6)
+    }
+  }
+  return []
+}
+
+/** Put the chosen area on the end of the address, replacing the half-typed word. */
+export function addressWithPlace(address: string, place: string): string {
+  const label = titlePlace(place)
+  const words = address.trimEnd().split(/\s+/).filter(Boolean)
+  for (let count = Math.min(3, words.length); count >= 1; count -= 1) {
+    const fragment = normalizeAddress(words.slice(-count).join(' '))
+    if (fragment.length >= 2 && normalizeAddress(place).startsWith(fragment)) {
+      const kept = words.slice(0, -count)
+      return [...kept, label].join(' ')
+    }
+  }
+  const trimmed = address.trim()
+  return trimmed ? `${trimmed}, ${label}` : label
+}
