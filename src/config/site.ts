@@ -21,6 +21,8 @@ export const site = {
   instagramUrl: 'https://instagram.com/bankochow',
   /** Public site. The native apps send checkout here. */
   webOrigin: 'https://bankochow.com',
+  /** Android app on Google Play. The iOS listing is not up yet. */
+  playStoreUrl: 'https://play.google.com/store/apps/details?id=com.bankochow.app',
   /** The line on the Instagram bio. Same as the main tag. */
   instagramBio: mainTag,
 
@@ -32,8 +34,13 @@ export const site = {
   },
   mapsQuery: '48 Abiodun Street, Shomolu, Lagos, Nigeria',
 
-  /** Shown on Find Us and the footer. Keep generic until opening hours are confirmed. */
-  hoursNote: 'Open daily for pickup & delivery',
+  /** Weekly hours. Sunday is pre-order, not walk-in. */
+  hours: [
+    { days: 'Monday to Saturday', time: '10am to 7pm' },
+    { days: 'Sunday', time: 'Pre-orders only' },
+  ],
+  /** Kitchen time after payment. Pickup and the rider both wait on this. */
+  prepNote: 'Ready in 30 minutes to an hour. Pickup and the rider both start after that.',
 
   /** CAC business name (BN) registration number. */
   registrationNumber: 'BN 9160362',
@@ -51,6 +58,13 @@ export const site = {
     'Street ti take over!',
   ],
 } as const
+
+/** One sentence for tight spots. The rows above are the schedule itself. */
+export function hoursSummary(): string {
+  const [week, sunday] = site.hours
+  const sundayTime = sunday.time.charAt(0).toLowerCase() + sunday.time.slice(1)
+  return `${week.days}, ${week.time}. ${sunday.days}, ${sundayTime}.`
+}
 
 export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapsQuery)}`
 export const mapsEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapsQuery)}&z=16&output=embed`
