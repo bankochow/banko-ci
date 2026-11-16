@@ -1,8 +1,8 @@
 # Banko Chow CI
 
-Order tests for [Banko Chow](https://bankochow.com). This repository is public so GitHub Actions minutes are free.
+Order tests for [Banko Chow](https://bankochow.com). This repository is public so GitHub Actions minutes on standard hosted runners are free.
 
-The app and the signed releases stay on the private repository `bankochow/banko-app`.
+The app and the signed releases stay on the private repository `bankochow/banko-app`. That private repo does not run Actions.
 
 ## What runs here
 
@@ -18,7 +18,7 @@ Nothing in this repo can charge a card. There is no Paystack secret here.
 ## What stays on the private repo
 
 - The website deploys from `bankochow/banko-app` `main` through Cloudflare Pages.
-- iOS TestFlight is a manual release workflow on that repo.
+- iOS and Android release builds are local on that private source.
 - The iOS and Android apps are the website in a Capacitor shell. A web change is the mobile change. The usual iOS check is to build that shell and look at the screens.
 
 When pricing or checkout code changes on the private repo, copy these files here so the tests still match production:
